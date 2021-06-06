@@ -1,4 +1,4 @@
-dataset_dir = r"D:\Dataset\MarkaModel\images.record"
+dataset_dir = r"C:\Users\Utku\Documents\HelloWorld\Dataset\images.record"
 batch_size = 64
 image_size = 64
 latent_vector_size = 100
@@ -7,4 +7,4 @@ discriminator_feature_map_count = 64
 num_epochs = 5
 learning_rate = 0.0002
 beta1 = 0.5
-gpu = '1'
+gpu = '0'
