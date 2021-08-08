@@ -1,10 +1,14 @@
+import cv2
 import tensorflow as tf
 import pandas as pd
 import os
 import re
 
+BUFFER_SIZE = 500
+DCGAN = "dcgan"
 
-def create_car_dataset(ds_dir, batch_size, image_size):
+
+def create_car_dataset(ds_dir, batch_size, image_size, model_type=DCGAN):
     def create_csv_dataset():
         def parse_image(filename):
             image = tf.io.read_file(filename)
@@ -41,9 +45,8 @@ def create_car_dataset(ds_dir, batch_size, image_size):
 
         dataset = tf.data.TFRecordDataset(ds_dir)
         dataset = dataset.map(_parse_image_function, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-        dataset = dataset.shuffle(500)
+        dataset = dataset.shuffle(BUFFER_SIZE)
         dataset = dataset.batch(batch_size, drop_remainder=True)
-        dataset = dataset.repeat()
         dataset = dataset.prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
         return dataset
 
@@ -61,19 +64,24 @@ def create_car_dataset(ds_dir, batch_size, image_size):
 if __name__ == '__main__':
     import os
     import time
+    import numpy as np
 
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-    df_path = r"D:\Dataset\MarkaModel\images.record"
-    dataset = create_car_dataset(df_path, 16, 64)
+    df_path = r"C:\Users\Utku\Documents\Dataset\imagesCrop2.record"
+    dataset = create_car_dataset(df_path, 16, 256)
 
     last_time = time.time()
-    for i, image in enumerate(dataset):
+    for i, images in enumerate(dataset):
         t = time.time()
         fetch_time = (t - last_time) * 1000
         if i % 100 == 0:
             print("Batch: {}".format(i), round(fetch_time, 2), 'ms')
-
         last_time = time.time()
 
-
+        for j, image in enumerate(images):
+            image = image * 127.5 + 127.5
+            image = image.numpy().astype(np.uint8)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            cv2.imshow(str(j), image)
+        cv2.waitKey(0)

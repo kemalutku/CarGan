@@ -53,7 +53,7 @@ class Recorder:
         if output_dir is None:
             output_dir = os.path.dirname(self.df_dir)
         if not os.path.isfile(output_dir):
-            output_dir = os.path.join(output_dir, 'imagesCrop.record')
+            output_dir = os.path.join(output_dir, 'imagesCrop2.record')
         if not os.path.isdir(os.path.dirname(output_dir)):
             os.makedirs(os.path.dirname(output_dir))
 
@@ -80,17 +80,19 @@ class Recorder:
 
                 if self.record_type == 'jpgCrop':
                     image = tf.image.decode_image(image_string)
-                    height, width, _ = image.shape
+                    im_h, im_w, _ = image.shape
                     bottom = top + height
                     right = left + width
-                    top = top if top > 0  else 0
+                    top = top if top > 0 else 0
                     left = left if left > 0 else 0
-                    bottom = bottom if bottom < height else height
-                    right = right if right < width else width
+                    bottom = bottom if bottom < im_h else im_h
+                    right = right if right < im_w else im_w
 
                     image = image[top:bottom, left:right]
-                    image_string = tf.image.encode_jpeg(image)
-
+                    try:
+                        image_string = tf.image.encode_jpeg(image)
+                    except:
+                        continue
                 serialized_feature = self.serialize_mm(image_string, label)
                 writer.write(serialized_feature)
             print("Total image count:", counter)

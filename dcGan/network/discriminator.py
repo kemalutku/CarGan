@@ -27,6 +27,11 @@ class Discriminator(Model):
         self.b_norm3 = BatchNormalization()
         self.b_norm4 = BatchNormalization()
 
+        self.b_norm1 = BatchNormalization()
+        self.b_norm2 = BatchNormalization()
+        self.b_norm3 = BatchNormalization()
+        self.b_norm4 = BatchNormalization()
+
         self.leaky_relu = LeakyReLU(alpha=0.2)
 
     def call(self, inputs, **kwargs):
